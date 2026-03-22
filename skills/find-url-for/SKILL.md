@@ -14,7 +14,7 @@ The **notion** to resolve: person, place, work, organization, or concept. Determ
 1. **Search** — Use web search to find the entity and common linked-data sources. Query for the name plus "Wikidata", "DBpedia", or "linked data URI".
 2. **Choose source** — Prefer these in order when a stable, dereferenceable URI is needed:
    - **Wikidata** — `https://www.wikidata.org/entity/Q<id>` for people, places, works, concepts. Widely used, has labels in many languages. Prefix: `wd: <https://www.wikidata.org/entity/>`.
-   - **DBpedia** — `http://dbpedia.org/resource/<Name>` (spaces as underscores). Good for Wikipedia-derived entities.
+   - **DBpedia** — `http://www.dbpedia.org/resource/<Name>` (spaces as underscores). Prefer **`http://www.dbpedia.org/...`** (www host) over `http://dbpedia.org/resource/...`; the www form is the canonical published pattern. Good for Wikipedia-derived entities.
    - **VIAF** — For authors: `https://viaf.org/viaf/<id>`.
    - **id.loc.gov** — For authority control (authors, subjects): `https://id.loc.gov/authorities/names/<id>`.
    - **schema.org** — Only for types (e.g. Book, Person); not for individual entities.
