@@ -14,9 +14,7 @@
       "@type": "@id"
 $type: owl:Class
 rdfs:label: SSD host protocol
-rdfs:comment: |
-  Protocol through which a solid-state drive (SSD) communicates with its host.
-  SATA, SAS, and NVMe are instances in this graph; AHCI and PCIe appear only as skos:related.
+rdfs:comment: Protocol through which a solid-state drive (SSD) communicates with its host
 instances:
   - $id: wd:Q188639
     skos:related: wd:Q379598
