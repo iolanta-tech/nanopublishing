@@ -1,0 +1,3 @@
+[submodule "references/nanopub-guidelines"]
+	path = references/nanopub-guidelines
+	url = https://github.com/Nanopublication/Guidelines.git
