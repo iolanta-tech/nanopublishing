@@ -2,7 +2,7 @@
 "@context":
   - https://json-ld.org/contexts/dollar-convenience.jsonld
   - "@language": en
-    wd: https://www.wikidata.org/entity/
+    wd: http://www.wikidata.org/entity/
     skos: http://www.w3.org/2004/02/skos/core#
     rdfs: http://www.w3.org/2000/01/rdf-schema#
     rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
