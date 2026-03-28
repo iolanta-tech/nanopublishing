@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nanopublish-skill-nanopublish"
+version = "0.1.0"
+description = "Jeeves commands to build, sign, check, and publish nanopublications from Markdown-LD."
+readme = "SKILL.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jeeves-shell",
+    "yaml-ld",
+    "rdflib>=6.0",
+    "rdflib-pyld-compat>=0.1",
+    "PyYAML>=6.0",
+    "sh>=2.0",
+]
+
+# Editable install pulls dependencies; runtime is `jeeves.py` in this directory only.
+
+[tool.setuptools]
+packages = []
