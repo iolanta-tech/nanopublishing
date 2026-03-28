@@ -7,7 +7,7 @@
     compatible-with:
       "@type": "@id"
       "@id": wd:P8956
-"@included":
+"$included":
   - $id: wd:Q15528609
     compatible-with:
       - wd:Q188639
