@@ -25,7 +25,11 @@ markdown_extensions:
       base_path:
         - docs
       check_paths: true
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -34,6 +38,8 @@ markdown_extensions:
 plugins:
   - search
   - awesome-pages
+  - macros:
+      on_error_fail: false
 
 theme:
   name: material
