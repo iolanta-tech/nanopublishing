@@ -13,8 +13,10 @@ dependencies = [
     "mkdocs>=1.6",
     "mkdocs-material>=9.7.0",
     "mkdocs-awesome-pages-plugin>=2.9.2",
+    "mkdocs-macros-plugin>=1.3.9",
     "pymdown-extensions>=10.0",
     "pygments>=2.18",
+    "iolanta",
     "sh>=2.0",
 ]
 
