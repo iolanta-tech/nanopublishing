@@ -1,5 +1,7 @@
 # nanopublishing
 
+![Europa and Jupiter](docs/assets/images/europa-and-jupiter.png)
+
 Skills for building nanopublications from Markdown with coding agents.
 
 Published docs: https://nanopublishing.iolanta.tech/
