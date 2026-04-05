@@ -12,6 +12,6 @@ npx skills add https://github.com/iolanta-tech/nanopublishing --skill '*' -a cla
 
 ## Workflow
 
-Start with `$semantify` on an existing Markdown file. Then use `$nanopublish` when the frontmatter is ready.
+Start with `/semantify` (or `$semantify`, for Open AI Codex) on an existing Markdown file. Then use `$nanopublish` when the frontmatter is ready.
 
 See the site for more details!
