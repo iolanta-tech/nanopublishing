@@ -49,7 +49,7 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
 <div markdown="1">
 <div class="chat-block user">
   <div class="chat-speaker"><img class="chat-avatar dave-avatar" src="assets/images/dave.png" alt="Dave avatar"/><span>Dave</span></div>
-  Please write, in <code>index.md</code>, which SSD form factors can use what connection interfaces.
+  Please write, in <code>index.md</code>, that Europa is a satellite of Jupiter, according to the International Astronomical Union.
 </div>
 <div class="chat-block agent">
   <div class="chat-speaker"><img class="chat-avatar hal-avatar" src="assets/images/hal9000-sharper-reflections.svg" alt="HAL 9000 avatar"/><span>HAL 9000</span></div>
@@ -59,7 +59,7 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
 <div markdown="1">
 
 ```markdown title="index.md"
---8<-- "examples/types-of-ssds/interface-to-form-factor-mapping/index.md:25:41"
+--8<-- "examples/odyssey-2001/europa-is-a-satellite-of-jupiter/index.md:22:26"
 ```
 
 </div>
@@ -70,11 +70,11 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
 
 <div class="chat-block user">
   <div class="chat-speaker"><img class="chat-avatar dave-avatar" src="assets/images/dave.png" alt="Dave avatar"/><span>Dave</span></div>
-  How do we express that one thing is compatible to another? <strong>/find-url-for</strong>&nbsp;<em>compatible with</em>
+  How do we express that one thing is a satellite of another? <strong>/find-url-for</strong>&nbsp;<em>satellite of</em>
 </div>
 <div class="chat-block agent" markdown="1">
   <div class="chat-speaker"><img class="chat-avatar hal-avatar" src="assets/images/hal9000-sharper-reflections.svg" alt="HAL 9000 avatar"/><span>HAL 9000</span></div>
-  We can use [ :fontawesome-brands-wikipedia-w: <code>wd:P8956</code> ](https://www.wikidata.org/wiki/Property:P8956).
+  Wikidata has [ :fontawesome-brands-wikipedia-w: <code>wdt:P397</code> ](https://www.wikidata.org/wiki/Property:P397), but for readability we can mint a local predicate and declare it as a subproperty.
 </div>
 
 </div>
@@ -89,16 +89,14 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
 </div>
 <div class="chat-block agent" markdown="1">
   <div class="chat-speaker"><img class="chat-avatar hal-avatar" src="assets/images/hal9000-sharper-reflections.svg" alt="HAL 9000 avatar"/><span>HAL 9000</span></div>
-  I've added [ :simple-yaml: YAML-LD ](https://w3c.github.io/yaml-ld/spec/) frontmatter and mapped the compatibility facts to linked data.
+  I've added [ :simple-yaml: YAML-LD ](https://w3c.github.io/yaml-ld/spec/) frontmatter and mapped the astronomy claim to linked data.
 </div>
 
 </div>
 <div markdown="1">
 
 ```markdown
---8<-- "examples/types-of-ssds/interface-to-form-factor-mapping/index.md:1:27"
-
-...
+--8<-- "examples/odyssey-2001/europa-is-a-satellite-of-jupiter/index.md:1:26"
 ```
 
 </div>
@@ -116,20 +114,21 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
   It is published. The signed artifact remains beside the Markdown source.
 </div>
 
-[Open nanopublication](https://w3id.org/np/RAMIHkOctLsK2ZlbWS0gr0kz9wFffP0fHSIN-N_aKrgC8){ .md-button .md-button--primary }
+</div>
+<div markdown="1">
+
+[![Published nanopublication screenshot](assets/images/nanopublication.png){ .publish-preview }](https://w3id.org/np/RAQtNxM5sbzt7-4lGVzAMPQtT32wDUGJAqKJObwdbYNDs)
+
+</div>
+<div class="session-breakout" markdown="1">
 
 ### Visualization
 
 ```mermaid
-{{ (docs / 'examples/types-of-ssds/interface-to-form-factor-mapping/index.md') | as('mermaid') }}
+{{ ('https://w3id.org/np/RAQtNxM5sbzt7-4lGVzAMPQtT32wDUGJAqKJObwdbYNDs') | as('mermaid') }}
 ```
 
-[See the full example](examples/types-of-ssds/interface-to-form-factor-mapping/index.md){ .md-button }
-
-</div>
-<div markdown="1">
-
-![Published nanopublication screenshot](assets/images/nanopublication.png){ .publish-preview }
+[See the full example](examples/odyssey-2001/europa-is-a-satellite-of-jupiter/index.md){ .md-button }
 
 </div>
 </div>
@@ -137,26 +136,6 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
 <p class="avatar-attribution">
   HAL 9000 avatar: <a href="https://commons.wikimedia.org/wiki/File:HAL9000_-_Sharper_Reflections.svg">“HAL9000 - Sharper Reflections.svg”</a> by Cryteria and MorningLemon, licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, via Wikimedia Commons.
 </p>
-
-## More examples
-
-### :material-harddisk: Types of SSDs
-
-<div class="grid cards" markdown>
-
--   [SSD host protocol classification](examples/types-of-ssds/interface-scheme/index.md)
-
-    SATA, SAS, and NVMe as SSD host protocols.
-
--   [SSD form factor scheme](examples/types-of-ssds/form-factor-scheme/index.md)
-
-    M.2, mSATA, U.2, 2.5-inch, and add-in card form factors.
-
--   [M.2 keying scheme for SSDs](examples/types-of-ssds/m2-keying-scheme/index.md)
-
-    B key, M key, and B+M key as SSD-relevant M.2 keying patterns.
-
-</div>
 
 <style>
 .site-subtitle {
@@ -170,6 +149,10 @@ Add <code>-g</code> if you want a global install instead of a project-local one.
   gap: 1.2rem;
   margin: 1.8rem 0 2.2rem;
   align-items: start;
+}
+
+.session-breakout {
+  grid-column: 1 / -1;
 }
 
 .chat-block {
