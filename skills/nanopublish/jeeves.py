@@ -13,6 +13,8 @@ import sh
 import yaml
 import yaml_ld
 from rdflib import Dataset, Graph, Literal, Namespace, URIRef
+from yaml_ld.document_loaders.default import DEFAULT_DOCUMENT_LOADER
+from yaml_ld.document_loaders.local_file import LocalFileDocumentLoader
 from yaml_ld.to_rdf import ToRDFOptions
 
 
@@ -23,15 +25,32 @@ TEMP_NP = Namespace("http://purl.org/nanopub/temp/np/")
 PROFILE_PATH = Path.home() / ".nanopub" / "profile.yml"
 PRODUCTION_REGISTRY = "https://registry.knowledgepixels.com/np/"
 TEST_REGISTRY = "https://test.registry.knowledgepixels.com/np/"
+SITE_BASE = "https://nanopublishing.iolanta.tech/"
+SITE_CONTEXT_BASE = f"{SITE_BASE}context/"
 
 
-def _assertion_from_markdown_ld(path: Path) -> Graph:
+def _local_site_document_loader(source: str, options: dict) -> dict:
+    if source.startswith(SITE_CONTEXT_BASE):
+        relative_path = source.removeprefix(SITE_BASE)
+        local_path = Path(__file__).resolve().parents[2] / "docs" / relative_path
+        return LocalFileDocumentLoader()(local_path.as_uri(), options)
+
+    return DEFAULT_DOCUMENT_LOADER(source, options)
+
+
+def _dataset_from_markdown_ld(path: Path) -> Dataset:
     path = path.expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(path)
 
-    nq = yaml_ld.to_rdf(path, ToRDFOptions(format="application/n-quads"))
-    return Graph().parse(data=nq, format="nquads")
+    nq = yaml_ld.to_rdf(
+        path,
+        ToRDFOptions(
+            format="application/n-quads",
+            document_loader=_local_site_document_loader,
+        ),
+    )
+    return Dataset().parse(data=nq, format="nquads")
 
 
 def _load_profile() -> dict:
@@ -42,9 +61,27 @@ def _now_literal() -> Literal:
     return Literal(datetime.now(timezone.utc).replace(tzinfo=None), datatype=XSD.dateTime)
 
 
+def _copy_graph_fragments(
+    source_dataset: Dataset,
+    destination_graph: Graph,
+    subject: rdflib.term.Node,
+    predicate: URIRef,
+) -> None:
+    default_graph = source_dataset.default_context
+    graph_by_id = {
+        graph.identifier: graph
+        for graph in source_dataset.contexts()
+        if graph.identifier != default_graph.identifier
+    }
+
+    for _, _, graph_id in default_graph.triples((subject, predicate, None)):
+        for triple in graph_by_id.get(graph_id, Graph()):
+            destination_graph.add(triple)
+
+
 def _build_nanopub(path: str, derived_from: str = "") -> Dataset:
     profile = _load_profile()
-    assertion_source = _assertion_from_markdown_ld(Path(path))
+    source_dataset = _dataset_from_markdown_ld(Path(path))
     creation_time = _now_literal()
 
     dataset = Dataset()
@@ -52,7 +89,7 @@ def _build_nanopub(path: str, derived_from: str = "") -> Dataset:
     dataset.bind("prov", PROV)
     dataset.bind("xsd", XSD)
 
-    for prefix, namespace in assertion_source.namespaces():
+    for prefix, namespace in source_dataset.namespaces():
         dataset.bind(prefix, namespace)
 
     nanopub_uri = TEMP_NP[""]
@@ -62,21 +99,47 @@ def _build_nanopub(path: str, derived_from: str = "") -> Dataset:
     pubinfo_uri = TEMP_NP["pubinfo"]
 
     head = Graph(dataset.store, head_uri)
+    assertion = Graph(dataset.store, assertion_uri)
+    provenance = Graph(dataset.store, provenance_uri)
+    pubinfo = Graph(dataset.store, pubinfo_uri)
+
+    source_default_graph = source_dataset.default_context
+    nanopub_predicate = TEMP_NP["nanopublication"]
+    roots = list(source_default_graph.subjects(nanopub_predicate, None))
+    nanopub_nodes = list(source_default_graph.objects(None, nanopub_predicate))
+
+    if nanopub_nodes:
+        for nanopub_node in nanopub_nodes:
+            _copy_graph_fragments(source_dataset, assertion, nanopub_node, assertion_uri)
+
+            for _, predicate, obj in source_default_graph.triples((nanopub_node, None, None)):
+                if predicate == assertion_uri:
+                    continue
+                provenance.add((assertion_uri, predicate, obj))
+
+        for root in roots:
+            for _, predicate, obj in source_default_graph.triples((root, None, None)):
+                if predicate == nanopub_predicate:
+                    continue
+                pubinfo.add((nanopub_uri, predicate, obj))
+    else:
+        _copy_graph_fragments(source_dataset, assertion, None, assertion_uri)
+        _copy_graph_fragments(source_dataset, provenance, None, provenance_uri)
+        _copy_graph_fragments(source_dataset, pubinfo, None, pubinfo_uri)
+
+    if len(assertion) == 0 and len(provenance) == 0 and len(pubinfo) == 0:
+        for triple in source_default_graph:
+            assertion.add(triple)
+
     head.add((nanopub_uri, rdflib.RDF.type, NP.Nanopublication))
     head.add((nanopub_uri, NP.hasAssertion, assertion_uri))
     head.add((nanopub_uri, NP.hasProvenance, provenance_uri))
     head.add((nanopub_uri, NP.hasPublicationInfo, pubinfo_uri))
 
-    assertion = Graph(dataset.store, assertion_uri)
-    for triple in assertion_source:
-        assertion.add(triple)
-
-    provenance = Graph(dataset.store, provenance_uri)
     provenance.add((assertion_uri, PROV.generatedAtTime, creation_time))
     if derived_from.strip():
         provenance.add((assertion_uri, PROV.wasDerivedFrom, URIRef(derived_from.strip())))
 
-    pubinfo = Graph(dataset.store, pubinfo_uri)
     pubinfo.add((nanopub_uri, PROV.generatedAtTime, creation_time))
     pubinfo.add((nanopub_uri, PROV.wasAttributedTo, URIRef(profile["orcid_id"])))
 
