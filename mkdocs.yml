@@ -39,7 +39,7 @@ plugins:
   - search
   - awesome-pages
   - macros:
-      on_error_fail: false
+      on_error_fail: true
 
 theme:
   name: material
