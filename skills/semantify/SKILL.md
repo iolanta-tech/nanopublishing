@@ -13,108 +13,82 @@ This skill is for **in-place formalization**:
 - read the Markdown body
 - extract the main entities and relationships
 - write linked-data frontmatter into the **same file**
+- validate the result independently
 
 This skill is **not** for creating a standalone `.ttl` file from scratch.
 
+## Required resources
+
+Always load these bundled resources before semantifying:
+
+- [rules.md](rules.md) — mandatory modeling, YAML-LD, entity-resolution, and validation rules.
+- [writer-prompt.md](writer-prompt.md) — instructions for the role that edits the Markdown file.
+- [validator-prompt.md](validator-prompt.md) — instructions for the read-only validation role.
+
+## Mandatory two-role workflow
+
+Every semantification must use two separate roles:
+
+1. **Writer** — reads the target file and `rules.md`, resolves entities, edits the Markdown file in place, and runs `pyld expand <file>` before handoff.
+2. **Validator** — reads the target file and `rules.md`, does not edit files, runs `pyld expand <file>` and `iolanta <file> --as kglint/json`, inspects Iolanta `assertions` and `labels`, and reports rule findings.
+
+When the runtime permits subagents, run the writer and validator as separate agents using the bundled prompt files. The writer owns edits to the target Markdown file. The validator owns no files and must remain read-only.
+
+If the runtime does not permit subagents, do **not** silently fall back to an ordinary single-role semantification. Stop and tell the user that this skill requires the writer/validator workflow and needs subagent authorization or a runtime that supports it.
+
 ## Workflow
 
-1. **Read the file**
+1. **Orient**
    - Inspect the current frontmatter and body.
    - If linked-data frontmatter already exists, treat the task as a revision, not a rewrite.
+   - Load `rules.md`, `writer-prompt.md`, and `validator-prompt.md`.
 
-2. **Model the subject, not the markdown wrapper**
-   - By default, formalize the domain the text is asserting about, not the Markdown file as a publication artifact.
-   - Only model the Markdown document itself as `schema:CreativeWork`, `schema:TechArticle`, or similar when the user explicitly wants bibliographic metadata or the document really is the subject.
-   - Prefer simple, robust vocabularies already used in the repo (`schema`, `rdfs`, `rdf`, `dct`, `skos`, `owl`) unless a stronger vocabulary is clearly needed.
-   - Keep the graph close to what the prose actually claims. Do not over-formalize weak implications.
-
-3. **Resolve entities**
-   - For people, places, organizations, works, concepts, standards, products, or technologies, use the [find-url-for](../find-url-for/SKILL.md) skill when a stable linked-data URI is needed.
-   - Prefer existing URIs over minting local ones.
-   - Only mint local IRIs for concepts that are specific to the document and have no suitable external URI.
-
-4. **Write frontmatter into the same file**
-   - Use YAML frontmatter with JSON-LD keys such as `"@context"` and `"@included"`.
+2. **Writer pass**
+   - Follow `writer-prompt.md`.
    - Preserve the document body unless the user asked to revise prose too.
-   - Prefer `@included` over `@graph`.
-   - Prefer a document-root node plus a small number of supporting nodes when needed.
+   - Keep the graph close to what the prose actually claims. Do not over-formalize weak implications.
+   - Run `pyld expand <file>` before handoff.
 
-5. **Validate in two stages**
-   - First run `pyld expand <file>` to validate that the frontmatter is valid JSON-LD/YAML-LD.
-   - Then run `iolanta <file> --as kglint/json` when graph linting or rendering validation matters.
-   - Treat those as different checks:
-     - `pyld expand` succeeding means the linked-data frontmatter is syntactically valid and expandable.
-     - Iolanta failures such as `Facet not found` or label-resolution problems are Iolanta-specific and do not by themselves prove the YAML-LD is invalid.
+3. **Validator pass**
+   - Follow `validator-prompt.md`.
+   - Run both validation commands:
+     ```bash
+     pyld expand path/to/file.md
+     iolanta path/to/file.md --as kglint/json
+     ```
+   - Read the full Iolanta JSON output, not just `assertions`.
+   - Remember that Iolanta loads the containing directory, so sibling RDF content may affect validation results.
 
-## Rules
-
-- `R00` Quote JSON-LD keyword keys in YAML where they must remain `@`-keywords, especially in `"@context"` and `"@included"`.
-- `R01` In the document body, prefer the dollar-convenience context `https://json-ld.org/contexts/dollar-convenience.jsonld` so you can use `$id` and `$type` instead of quoted `"@id"` and `"@type"`. Do not try to use `$`-keywords inside `"@context"`.
-- `R02` Do not quote ordinary YAML scalar values unless quoting is needed to avoid ambiguity. In particular, prefer unquoted language tags, URLs, CURIEs, and simple strings such as `en`, `https://schema.org/`, `wd:Q188639`, or `Types of SSDs`.
-- `R03` Prefer concise contexts. Add only prefixes you actually use.
-- `R04` Default to modeling the subject domain, concept, class, scheme, or entities described by the prose, not the Markdown file as an article about them.
-- `R05` When a property is already typed as `@id` by the context, prefer a bare IRI/CURIE scalar for simple values. Use `$id` only when that node also needs its own attached properties.
-- `R06` Do not add `rdfs:label` or `schema:name` to external Wikidata, DBpedia, VIAF, or similar entity URIs unless there is a concrete validation reason to carry a local label.
-- `R07` By default, assume the Markdown may later become a nanopublication. When minting local resources for such a file, do not use bare fragment IRIs like `#Thing`. Bind a prefix such as `this:` to `http://purl.org/nanopub/temp/np/` and mint the resource under that namespace instead, for example `this:Thing`.
-- `R08` If you mint a local resource, give it a human-readable label or name in the same graph.
-- `R09` If you reference another document by URL or relative document IRI and Iolanta needs a label for it, add a second node with the same `@id` and a `schema:name` or `rdfs:label`.
-- `R10` Prefer simple predicates that are likely to render well in the current toolchain. Avoid ontology-heavy shapes unless they materially improve the graph.
-- `R11` Local IRIs must be usable in validation. If a minted URI is not dereferenceable, give it a local `rdfs:label` or `schema:name` in the same graph.
-- `R12` If you use document-local fragments, they must be coherent with the document IRI. Do not use arbitrary fragment identifiers without a stable document context.
-- `R13` If you use a full URL for a referenced resource and it appears in object position, add a labeled node for that same `@id` when Iolanta needs a human-readable label.
-- `R14` Be cautious with Wikidata predicates and other external predicates that may render poorly in Iolanta. Prefer clearer public predicates when available; otherwise expect that rendering may be worse than syntactic validity.
+4. **Fix pass**
+   - If the validator reports blockers, the writer fixes them.
+   - Re-run the validator once after fixes.
+   - If blockers remain after the second validator pass, summarize them and ask the user how to proceed.
 
 ## Validation setup and failure handling
 
-Validation commands:
+The `pyld` CLI used by this skill comes from `yaml-ld`; `PyLD` is the Python library, not the CLI command this skill uses. `iolanta` is installed from the separate `iolanta` package and should install `pyld` transitively through `yaml-ld`.
 
-```bash
-pyld expand path/to/file.md
-iolanta path/to/file.md --as kglint/json
-```
-
-Use `pyld expand` to confirm the frontmatter expands as JSON-LD. Use `iolanta ... --as kglint/json` to inspect how Iolanta materializes and labels the graph. Read the full output, not just `assertions`.
-
-Only if one of those commands fails because the tool is missing or unavailable, report the setup issue clearly and recommend installing `iolanta`:
+If a command is missing or unavailable, report the setup issue clearly. Recommended install commands:
 
 ```bash
 python3 -m pip install --user iolanta
 ```
 
-Important package notes:
-
-- the `pyld` CLI used by this skill comes from `yaml-ld`
-- `PyLD` is the Python library, not the CLI command this skill uses
-- `iolanta` is installed from the separate `iolanta` package
-- installing `iolanta` should also install the `pyld` CLI transitively via its `yaml-ld` dependency
-- `yaml-ld` and `iolanta` require network access and writable cache/state directories in practice
-
-This installs the commands into the user's Python environment outside a virtualenv. If the user is working inside an active virtualenv, recommend installing there instead:
+If the user is working inside an active virtualenv, recommend installing there instead:
 
 ```bash
 python3 -m pip install iolanta
 ```
 
-Concrete fallback command set:
-
-```bash
-python3 -m pip install --user iolanta
-```
-
 Distinguish failure modes explicitly:
 
-- `command not found`
-  - the tool is not installed or not on `PATH`
-- `installed but not on PATH`
-  - report that the commands may have been installed into a Python user or virtual environment that the current shell is not using
-- cache/state directory not writable
-  - report it as an environment or sandbox problem
-- network or context-resolution failure
-  - report it as an environment or sandbox problem
-- long-running `iolanta`
-  - use a long timeout; no output yet is not by itself an error
+- `command not found` — tool is not installed or not on `PATH`.
+- installed but not on `PATH` — command may be in a Python user or virtual environment that the current shell is not using.
+- cache/state directory not writable — environment or sandbox problem.
+- network or context-resolution failure — environment or sandbox problem.
+- long-running `iolanta` — use a long timeout; no output yet is not by itself an error.
 
-If `pyld expand` succeeds and `iolanta` fails, report the distinction clearly and explain whether the failure looks like PATH/setup, cache/state, network, timeout, or Iolanta-specific graph rendering.
+If `pyld expand` succeeds and `iolanta` fails, report whether the failure looks like PATH/setup, cache/state, network, timeout, or Iolanta-specific graph rendering.
 
 ## Iolanta discipline
 
@@ -138,6 +112,5 @@ If `assertions` is non-empty:
 
 ## Notes
 
-- Iolanta loads the containing directory, so sibling RDF content may affect validation results.
 - Prefer incremental edits over replacing a whole frontmatter block unless the existing one is clearly unsalvageable.
 - This skill intentionally covers Markdown frontmatter workflows only. It does not replace standalone `.ttl` creation.
