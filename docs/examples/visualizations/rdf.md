@@ -18,6 +18,38 @@ $nanopublication:
           rdf:type:
             - $id: rdf:Property
             - $id: rdf:type
+      - rdfs:label: Triples
+        $reverse:
+          rdf:type:
+            - $id: rdf:subject
+            - $id: rdf:predicate
+            - $id: rdf:object
+            - $id: rdf:Statement
+      - rdfs:label: Containers
+        $reverse:
+          rdf:type:
+            - $id: rdf:first
+            - $id: rdf:rest
+            - $id: rdf:List
+            - $id: rdf:nil
+            - $id: rdf:Bag
+            - $id: rdf:Seq
+            - $id: rdf:Alt
+      - rdfs:label: Language
+        $reverse:
+          rdf:type:
+            - $id: rdf:langString
+            - $id: rdf:language
+      - $id: rdfs:Datatype
+      - rdfs:label: Compound Literal
+        $reverse:
+          rdf:type:
+            - $id: rdf:CompoundLiteral
+            - $id: rdf:direction
+      - rdfs:label: Value
+        $reverse:
+          rdf:type:
+            - $id: rdf:value
 
   rdfs:label: RDF ontology visualization
   iolanta:visualizes: "rdf:"
@@ -25,7 +57,7 @@ $nanopublication:
 
 # RDF ontology visualization
 
-A visualization for the RDF vocabulary that groups its terms into a single
-**Properties** group containing `rdf:Property` and `rdf:type`. Iolanta picks
-this nanopub up via `iolanta:visualizes rdf:` and renders the grouped terms
-when the user navigates to the `rdf:` namespace.
+A visualization for the RDF vocabulary that groups terms for properties,
+triples, containers, language values, compound literals, and values. Iolanta
+picks this nanopub up via `iolanta:visualizes rdf:` and renders the grouped
+terms when the user navigates to the `rdf:` namespace.
