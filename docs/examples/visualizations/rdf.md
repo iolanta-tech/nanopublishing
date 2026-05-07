@@ -47,8 +47,10 @@ $nanopublication:
         terms:
           - rdf:value
 
-  rdfs:label: RDF ontology visualization
+  rdfs:label: RDF terms by type
   iolanta:visualizes: "rdf:"
+
+npx:supersedes: https://w3id.org/np/RAXhiZMoa3JldEhxcgVyp8UIJL_N0PhEJpCTRXdKl7H_Q
 ---
 
 # RDF ontology visualization
