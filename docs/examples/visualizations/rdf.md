@@ -1,4 +1,6 @@
 ---
+hide: [toc]
+
 "@context":
   - https://nanopublishing.iolanta.tech/context/v0.yamlld
   - iolanta: https://iolanta.tech/
@@ -59,3 +61,5 @@ A visualization for the RDF vocabulary that groups terms for properties,
 triples, containers, language values, compound literals, and values. Iolanta
 picks this nanopub up via `iolanta:visualizes rdf:` and renders the grouped
 terms when the user navigates to the `rdf:` namespace.
+
+{{ URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#") | as('mkdocs-material') }}
