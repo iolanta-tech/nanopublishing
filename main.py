@@ -40,3 +40,4 @@ def define_env(env: MacrosPlugin):
     iolanta = Iolanta(project_root=Path(__file__).parent / "docs")
     env.filters["as"] = functools.partial(_as_filter, iolanta)
     env.variables["docs"] = Path(__file__).parent / "docs"
+    env.variables["URIRef"] = URIRef
