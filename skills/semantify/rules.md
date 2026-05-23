@@ -12,7 +12,7 @@ These rules are mandatory for both the writer and validator roles.
 - `R05b` Avoid redundant inverse-ish edges when one direction already expresses the relationship clearly. Add both directions only when they materially improve querying, rendering, or interoperability.
 - `R05c` When the RDF predicate direction points away from the node where the YAML would be clearest, prefer JSON-LD `$reverse` over inventing inverse predicates or flattening the related nodes. Verify that expansion still emits the intended forward triples.
 - `R06` Do not add `rdfs:label` or `schema:name` to external Wikidata, DBpedia, VIAF, or similar entity URIs unless there is a concrete validation reason to carry a local label.
-- `R07` By default, assume the Markdown may later become a nanopublication. When minting local resources for such a file, do not use bare fragment IRIs like `#Thing`. Bind a prefix such as `this:` to `http://purl.org/nanopub/temp/np/` and mint the resource under that namespace instead, for example `this:Thing`.
+- `R07` By default, assume the Markdown may later become a nanopublication. When minting local resources for such a file, do not use bare fragment IRIs like `#Thing`. Bind a prefix such as `this:` to `http://purl.org/nanopub/temp/np/` and mint the resource under that namespace instead, for example `this:Thing`. If the user or document context says the file is not a nanopublication, do not introduce `this:`; use coherent document-local identifiers instead.
 - `R08` If you mint a local resource, give it a human-readable label or name in the same graph.
 - `R08a` Mint identifiers only for nodes that need to be referred to from another part of the document or graph. Prefer blank nodes for inline supporting nodes that are described once and never referenced elsewhere.
 - `R09` If you reference another document by URL or relative document IRI and Iolanta needs a label for it, add a second node with the same `$id` or `"@id"` and a `schema:name` or `rdfs:label`.
@@ -26,6 +26,7 @@ These rules are mandatory for both the writer and validator roles.
 
 - For people, places, organizations, works, concepts, standards, products, technologies, reusable classes, and reusable properties, use the `find-url-for` skill when a stable linked-data URI is needed.
 - Before minting a local URI for any reusable concept, class, property, standard, product, or technology, try `find-url-for` and prefer an established linked-data URI when one fits.
+- For schema.org classes and properties, do not guess from labels or URL patterns. `pyld get http://schema.org` may be used as the authoritative compact schema.org term index; a schema.org term is verified only when the exact local name appears in the returned context and maps to the intended `schema:<Term>` IRI. Use `pyld get http://schema.org/<Term>` when richer linked-data evidence for the specific term is needed.
 - Prefer existing URIs over minting local ones.
 - Only mint local IRIs for concepts that are specific to the document and have no suitable external URI.
 
