@@ -47,6 +47,9 @@ If the runtime does not permit subagents, do **not** silently fall back to an or
    - Follow `writer-prompt.md`.
    - Preserve the document body unless the user asked to revise prose too.
    - Keep the graph close to what the prose actually claims. Do not over-formalize weak implications.
+   - Verify every external RDF term introduced by the semantification before using it. This applies to all external classes, properties, individuals, ontology terms, vocabulary terms, and URL identifiers.
+   - Use `find-url-for` or direct dereference against an authoritative linked-data source for external term verification. Do not invent, guess, or pattern-construct CURIEs or URLs.
+   - If an external term cannot be verified, do not use it. Mint a document-scoped local term only when the notion is genuinely document-specific; otherwise stop and ask the user which verified term to use.
    - Run `pyld expand <file>` before handoff.
 
 3. **Validator pass**
@@ -109,6 +112,8 @@ If `assertions` is non-empty:
   - treat them as Iolanta-specific rendering quirks
   - ignore them for now
 - only make assertion-driven edits after the user decides
+
+Do not add local labels to external URIs merely to satisfy Iolanta. First verify that the URI exists and exposes valid Linked Data for the intended term. Local labels are allowed only for verified external URIs that render poorly.
 
 ## Notes
 
