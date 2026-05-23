@@ -21,6 +21,11 @@ The **notion** to resolve: person, place, work, organization, or concept. Determ
 2. **Pick** — Prefer a nanopub-introduced term URI when one fits the notion (signed, content-immutable, citable). Otherwise choose from the Reconciliation API's scored list using the type chains. If you can't be sure, surface the top 2–3 candidates to the user.
 3. **Enrich** — Once you have a Wikidata Q-ID, call `wbgetentities` with `props=claims|sitelinks/urls`. This returns ~25 external authority IDs already stored on the entity (SIMBAD, Britannica, Freebase MID, JSTOR, WordNet, Store norske leksikon, …) plus 50+ Wikipedia sitelinks — Wikidata is itself a meta-search if you walk its external-ID properties. Optionally call **LODsyndesis `/objectCoreference`** with the Wikidata or DBpedia URI to fetch additional `owl:sameAs` links across YAGO, Freebase, regional DBpedias, etc. that Wikidata may not store.
 4. **Verify** — Confirm the chosen URI matches the intended entity (fetch the page/RDF and check the label/description).
+   - Never return a URI from search results, snippets, namespace patterns, or label-based construction without verifying that it resolves and exposes appropriate linked-data content for the requested notion.
+   - This applies to all namespaces and sources, including schema.org, Wikidata, DBpedia, LOV terms, nanopublication terms, and ontology terms.
+   - Do not construct ontology term URIs by label. For schema.org and other vocabularies, verify the exact class/property page or authoritative RDF before returning the term.
+   - Prefer semantic tooling before ad hoc HTTP probing: use `pyld get {url}` to check linked-data payload retrieval and `iolanta {url} --as title` to check whether the URI renders to a meaningful title. Fall back to manual HTTP/header inspection only when those tools do not explain the result.
+   - **schema.org shortcut:** schema.org intentionally exposes the namespace root as a compact JSON-LD context rather than the full vocabulary graph. For schema.org terms, `pyld get http://schema.org` may be used as the authoritative lightweight term index: a term is verified when its exact local name appears in the returned context with an `@id` matching `schema:<Term>`. If richer evidence is needed, `pyld get http://schema.org/<Term>` must also return a non-empty `@graph` containing that term. If the term is absent from the context or the exact term fetch fails, do not use it.
 5. **Return** — Give the user the canonical URI, the Turtle prefix, an example triple, and — when multiple candidates exist — a short comparison.
 
 ## Sources
@@ -38,7 +43,7 @@ This project's primary source is the **Nanopublications registry**. Always check
 - **Falcon 2.0** (TIB) — entity + relation linker over Wikidata/DBpedia. Takes a *sentence*, returns Wikidata Q-IDs. Useful when the label alone is ambiguous and the user has provided context. Beware of spurious extractions from filler phrases — filter to the user's actual notion.
 - **id.loc.gov** — `https://id.loc.gov/authorities/names/<id>`. LoC authority control. Niche — useful only for persons/orgs/works in the library catalog.
 - **VIAF** — `https://viaf.org/viaf/<id>`. Authors and persons. **The AutoSuggest API is blocked by Cloudflare for non-browser clients** — link manually if needed; don't rely on programmatic lookup.
-- **schema.org** — Only for types (e.g. `schema:Book`, `schema:Person`); not for individual entities.
+- **schema.org** — Only for verified types/properties (e.g. `schema:Book`, `schema:Person`); not for individual entities. Never guess schema.org terms by name: verify the exact term exists before returning it. Use `pyld get http://schema.org` as the compact schema.org term index when the full RDF vocabulary graph would be unnecessarily large; require an exact context entry whose `@id` maps to the intended schema.org URI.
 
 ## Concrete API reference
 
