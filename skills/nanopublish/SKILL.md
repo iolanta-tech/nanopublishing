@@ -46,6 +46,12 @@ The `publish` command is provided by the local `j` project in this directory, no
 - `j check <signed-file.trig>`
   Validates a signed nanopub via the Rust `nanopub` CLI.
 
+## After Publishing
+
+- Update `npx:supersedes` in the Markdown source to the trusty URI printed by `j publish`.
+- Do not edit the signed `signed.<stem>.trig`; it is immutable once published.
+- The updated `npx:supersedes` value is the input for the next publication in the version chain.
+
 ## Namespace Guidance
 
 If the Markdown needs nanopub-local terms that should end up under the final trusty URI, mint them in the nanopub placeholder namespace:
