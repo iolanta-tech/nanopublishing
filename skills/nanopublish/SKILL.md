@@ -52,6 +52,12 @@ The `publish` command is provided by the local `j` project in this directory, no
 - Do not edit the signed `signed.<stem>.trig`; it is immutable once published.
 - The updated `npx:supersedes` value is the input for the next publication in the version chain.
 
+## Visualization Nanopubs
+
+- Put `iolanta:visualizes` at the `$nanopublication` level (alongside `rdfs:label`), not as an `$assertion` list entry. `jeeves.py` emits `assertion iolanta:visualizes <target>` in the provenance graph.
+- Icon-only visualization nanopubs still require `iolanta:visualizes`. Set the target to the IRI Iolanta should associate (e.g. `dbr:Proxima_Centauri` for entity icons).
+- Declare `iolanta:visualizes` in the local `@context` overlay with `"@type": "@id"`.
+
 ## Namespace Guidance
 
 If the Markdown needs nanopub-local terms that should end up under the final trusty URI, mint them in the nanopub placeholder namespace:
@@ -72,6 +78,8 @@ This lets signing rewrite the term into the nanopub-local URI space of the final
 ## Implementation Notes
 
 - `j publish ...` must be run from `skills/nanopublish/`, because that is the Python project that exposes the `publish` subcommand.
+- Invoke `j` as `skills/nanopublish/.venv/bin/j` (or ensure that venv is active). Bare `j` is often not on `PATH`.
+- If `yaml_ld` fails importing `prepend_base` from `pyld`, pin `PyLD==2.0.4` in the skill venv: `uv pip install 'PyLD==2.0.4'`.
 - A normal `j publish path/to/index.md` run keeps a local signed file at `path/to/signed.index.trig`.
 - Unsigned nanopubs are assembled locally with `rdflib`.
 - `jeeves.py` derives the nanopub graph split from the expanded YAML-LD source structure rather than expecting assertion-only frontmatter.
