@@ -7,7 +7,6 @@ hide: [toc]
     vann: http://purl.org/vocab/vann/
     rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
     iolanta:visualizes:
-      "@id": https://iolanta.tech/visualizes
       "@type": "@id"
     terms:
       "@reverse": rdf:type
@@ -19,32 +18,48 @@ $nanopublication:
     vann:termGroup:
       - rdfs:label: Properties
         terms:
-          - rdf:Property
-          - rdf:type
+          - $id: rdf:Property
+            iolanta:icon: →
+          - $id: rdf:type
+            iolanta:icon: ∈
       - rdfs:label: Triples
         terms:
-          - rdf:subject
-          - rdf:predicate
-          - rdf:object
-          - rdf:Statement
+          - $id: rdf:subject
+            iolanta:icon: ○
+          - $id: rdf:predicate
+            iolanta:icon: →
+          - $id: rdf:object
+            iolanta:icon: ◉
+          - $id: rdf:Statement
+            iolanta:icon: ⦀
       - rdfs:label: Containers
         terms:
           - rdf:first
           - rdf:rest
-          - rdf:List
-          - rdf:nil
-          - rdf:Bag
-          - rdf:Seq
-          - rdf:Alt
+          - $id: rdf:List
+            iolanta:icon: ⋮
+          - $id: rdf:nil
+            iolanta:icon: ∅
+          - $id: rdf:Bag
+            iolanta:icon: ⊎
+          - $id: rdf:Seq
+            iolanta:icon: ⋯
+          - $id: rdf:Alt
+            iolanta:icon: ⊕
       - rdfs:label: Language
         terms:
-          - rdf:langString
-          - rdf:language
+          - $id: rdf:langString
+            iolanta:icon: 🌐
+          - $id: rdf:language
+            iolanta:icon: 🌐
       - $id: rdfs:Datatype
+        iolanta:icon: ⊤
       - rdfs:label: Compound Literal
         terms:
-          - rdf:CompoundLiteral
-          - rdf:direction
+          - $id: rdf:CompoundLiteral
+            iolanta:icon: ⊞
+          - $id: rdf:direction
+            iolanta:icon: ⇄
       - rdfs:label: Value
         terms:
           - rdf:value
@@ -52,7 +67,7 @@ $nanopublication:
   rdfs:label: RDF terms by type
   iolanta:visualizes: "rdf:"
 
-npx:supersedes: https://w3id.org/np/RAXhiZMoa3JldEhxcgVyp8UIJL_N0PhEJpCTRXdKl7H_Q
+npx:supersedes: https://w3id.org/np/RASsLPDBpyeofCHRTdy2NYLtU-mep--kB7eRzIHFPkawo
 ---
 
 # RDF ontology visualization
