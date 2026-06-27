@@ -30,7 +30,7 @@ Always load these bundled resources before semantifying:
 Every semantification must use two separate roles:
 
 1. **Writer** — reads the target file and `rules.md`, resolves entities, edits the Markdown file in place, and runs `pyld expand <file>` before handoff.
-2. **Validator** — reads the target file and `rules.md`, does not edit files, runs `pyld expand <file>` and `iolanta <file> --as kglint/json`, inspects Iolanta `assertions` and `labels`, and reports rule findings.
+2. **Validator** — reads the target file and `rules.md`, does not edit files, runs `pyld expand <file>` and `iolanta <file> --as kglint/json`, inspects Iolanta `assertions` and `labels`, audits predicate decisions per `R15`, and reports rule findings.
 
 When the runtime permits subagents, run the writer and validator as separate agents using the bundled prompt files. The writer owns edits to the target Markdown file. The validator owns no files and must remain read-only.
 
@@ -50,6 +50,7 @@ If the runtime does not permit subagents, do **not** silently fall back to an or
    - Verify every external RDF term introduced by the semantification before using it. This applies to all external classes, properties, individuals, ontology terms, vocabulary terms, and URL identifiers.
    - Use `find-url-for` or direct dereference against an authoritative linked-data source for external term verification. Do not invent, guess, or pattern-construct CURIEs or URLs.
    - If an external term cannot be verified, do not use it. Mint a document-scoped local term only when the notion is genuinely document-specific; otherwise stop and ask the user which verified term to use.
+   - Before minting property IRIs: follow `R15` edge resolution; include **Predicate choices** in handoff when required (see `writer-prompt.md`).
    - Run `pyld expand <file>` before handoff.
 
 3. **Validator pass**
@@ -60,10 +61,12 @@ If the runtime does not permit subagents, do **not** silently fall back to an or
      iolanta path/to/file.md --as kglint/json
      ```
    - Read the full Iolanta JSON output, not just `assertions`.
+   - Run predicate audit per `validator-prompt.md`; empty `assertions` alone is insufficient for pass.
    - Remember that Iolanta loads the containing directory, so sibling RDF content may affect validation results.
 
 4. **Fix pass**
    - If the validator reports blockers, the writer fixes them.
+   - If the validator blocks on predicate justification (`R15`), the writer must either adopt a verified external term or expand minting rationale with additional documented candidates — not silently retain minted terms without updated **Predicate choices**.
    - Re-run the validator once after fixes.
    - If blockers remain after the second validator pass, summarize them and ask the user how to proceed.
 
