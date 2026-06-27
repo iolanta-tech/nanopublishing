@@ -16,17 +16,44 @@ These rules are mandatory for both the writer and validator roles.
 - `R08` If you mint a local resource, give it a human-readable label or name in the same graph.
 - `R08a` Mint identifiers only for nodes that need to be referred to from another part of the document or graph. Prefer blank nodes for inline supporting nodes that are described once and never referenced elsewhere.
 - `R09` If you reference another document by URL or relative document IRI and Iolanta needs a label for it, add a second node with the same `$id` or `"@id"` and a `schema:name` or `rdfs:label`.
-- `R10` Prefer simple predicates that are likely to render well in the current toolchain. Avoid ontology-heavy shapes unless they materially improve the graph.
+- `R10` After predicate resolution (`R15`), among verified external candidates that fit the intended relation, prefer simpler predicates likely to render well in the current toolchain. This does **not** authorize minting local predicates for Mermaid/Iolanta label convenience.
 - `R11` Local IRIs must be usable in validation. If a minted URI is not dereferenceable, give it a local `rdfs:label` or `schema:name` in the same graph.
 - `R12` If you use document-local fragments, they must be coherent with the document IRI. Do not use arbitrary fragment identifiers without a stable document context.
 - `R13` If you use a full URL for a referenced resource and it appears in object position, add a labeled node for that same `$id` or `"@id"` when Iolanta needs a human-readable label.
-- `R14` Be cautious with Wikidata predicates and other external predicates that may render poorly in Iolanta. Prefer clearer public predicates when available; otherwise expect that rendering may be worse than syntactic validity.
+- `R14` When a verified external predicate fits the intended relation but renders poorly in Iolanta, reuse it anyway unless a different verified external predicate fits better. Poor rendering is a non-blocker, not grounds to mint a local property.
+- `R15` Before minting a document-local **property** IRI:
+  - identify **2–3 verified external candidates**, or document why the relation is not addressable by public vocabularies at all;
+  - mint only when the relation is genuinely document-specific and no suitable external URI exists after edge-resolution search;
+  - minting solely for Mermaid/Iolanta edge labels is insufficient (`R10`, `R14`);
+  - reusing an external predicate with semantic stretch requires a one-line stretch note in the writer handoff **Predicate choices** section.
+  - Example — theory-internal dependency *"phenomenon depends on principle"*:
+    ```
+    Considered: dcterms:requires (domain too bibliographic);
+                RO:0002502 (causally upstream of — direction/stretch mismatch).
+    Reusing: schema:dependsOn — close enough; stretch: theory-internal, not software.
+    ---
+    Considered: dcterms:relation, prov:wasDerivedFrom, skos:broader — none fit epistemic dependency.
+    Minting: doc:isPredicatedOn — document-specific epistemic relation; no public URI after LOV + RO + schema.org search.
+    ```
 
 ## Entity Resolution
 
-- For people, places, organizations, works, concepts, standards, products, technologies, reusable classes, and reusable properties, use the `find-url-for` skill when a stable linked-data URI is needed.
-- Before minting a local URI for any reusable concept, class, property, standard, product, or technology, try `find-url-for` and prefer an established linked-data URI when one fits.
+Distinguish **node resolution** (entities) from **edge resolution** (predicates).
+
+### Node resolution
+
+- For people, places, organizations, works, concepts, standards, products, technologies, and reusable classes, use the `find-url-for` skill when a stable linked-data URI is needed.
+- Before minting a local URI for any reusable concept, class, standard, product, or technology, try `find-url-for` and prefer an established linked-data URI when one fits.
+
+### Edge resolution
+
+- For properties and relations between nodes, use `find-url-for` with LOV term search when the notion is a relation (see `find-url-for` skill).
+- `find-url-for` may return no relation hits — still search before minting: schema.org index (`pyld get http://schema.org`), RO (`http://purl.obolibrary.org/obo/RO_*`), `dcterms:`, `prov:`, and dereference candidates from known ontologies.
 - For schema.org classes and properties, do not guess from labels or URL patterns. `pyld get http://schema.org` may be used as the authoritative compact schema.org term index; a schema.org term is verified only when the exact local name appears in the returned context and maps to the intended `schema:<Term>` IRI. Use `pyld get http://schema.org/<Term>` when richer linked-data evidence for the specific term is needed.
+- Follow `R15` before minting any document-local property IRI.
+
+### General
+
 - Prefer existing URIs over minting local ones.
 - Only mint local IRIs for concepts that are specific to the document and have no suitable external URI.
 
