@@ -52,8 +52,6 @@ $nanopublication:
             iolanta:icon: 🌐
           - $id: rdf:language
             iolanta:icon: 🌐
-      - $id: rdfs:Datatype
-        iolanta:icon: ⊤
       - rdfs:label: Compound Literal
         terms:
           - $id: rdf:CompoundLiteral
@@ -67,7 +65,7 @@ $nanopublication:
   rdfs:label: RDF terms by type
   iolanta:visualizes: "rdf:"
 
-npx:supersedes: https://w3id.org/np/RASsLPDBpyeofCHRTdy2NYLtU-mep--kB7eRzIHFPkawo
+npx:supersedes: https://w3id.org/np/RAhcvyoztHSOUwEc5nRN1EUKjC-PQUzNQUXclOkB4_ZCM
 ---
 
 # RDF ontology visualization
