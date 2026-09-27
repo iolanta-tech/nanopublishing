@@ -1,0 +1,33 @@
+"@context":
+  - https://json-ld.org/contexts/dollar-convenience.jsonld
+  - "@language": en
+    this: http://purl.org/nanopub/temp/np/
+    npx: http://purl.org/nanopub/x/
+    wd: https://www.wikidata.org/entity/
+    wdt: http://www.wikidata.org/prop/direct/
+    prov: http://www.w3.org/ns/prov#
+    rdfs: http://www.w3.org/2000/01/rdf-schema#
+
+    prov:wasAttributedTo: &iri
+      "@type": "@id"
+
+    npx:describes: *iri
+    npx:supersedes: *iri
+    npx:invalidates: *iri
+    npx:hasOriginalVersion: *iri
+    npx:retracts: *iri
+    npx:hasNanopubType: *iri
+    npx:introduces: *iri
+    npx:embeds: *iri
+    npx:wasCreatedWith: *iri
+    npx:certifies: *iri
+    npx:qualifies: *iri
+    npx:approvesOf: *iri
+    npx:disapprovesOf: *iri
+
+    $nanopublication:
+      "@id": this:nanopublication
+
+    $assertion:
+      "@id": this:assertion
+      "@container": "@graph"

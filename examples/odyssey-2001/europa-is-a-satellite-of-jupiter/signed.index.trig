@@ -1,0 +1,38 @@
+@prefix sub: <https://w3id.org/np/RAfCKFTu_vFiL6atF8ACFf-IJwUmGG0gDdxDwUFc4u_BU/> .
+@prefix this: <https://w3id.org/np/RAfCKFTu_vFiL6atF8ACFf-IJwUmGG0gDdxDwUFc4u_BU> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ns2: <http://purl.org/nanopub/temp/np/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix ns1: <http://purl.org/nanopub/x/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix orcid: <https://orcid.org/> .
+sub:Head {
+	this: a np:Nanopublication ;
+		np:hasAssertion sub:assertion ;
+		np:hasProvenance sub:provenance ;
+		np:hasPublicationInfo sub:pubinfo .
+}
+sub:assertion {
+	sub:is-satellite-of rdfs:label "is satellite of"@en ;
+		rdfs:subPropertyOf <http://www.wikidata.org/prop/direct/P397> .
+	<https://www.wikidata.org/entity/Q3143> sub:is-satellite-of <https://www.wikidata.org/entity/Q319> .
+}
+sub:provenance {
+	sub:assertion prov:generatedAtTime "2026-04-05T17:25:31.231555"^^xsd:dateTime ;
+		prov:wasAttributedTo <https://www.wikidata.org/entity/Q6867> .
+}
+sub:pubinfo {
+	this: <http://purl.org/dc/terms/created> "2026-04-05T17:25:31.243Z"^^xsd:dateTime ;
+		npx:describes <https://www.wikidata.org/entity/Q319> ;
+		prov:generatedAtTime "2026-04-05T17:25:31.231555"^^xsd:dateTime ;
+		prov:wasAttributedTo orcid:0009-0001-8740-4213 .
+	sub:sig npx:hasAlgorithm "RSA" ;
+		npx:hasPublicKey "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA79G1aksiLFmT7Lco5+qLImUeO0Dfli7k1R76QYoVtuMV0w4fQdv9oLXGGpLZ7U25pH7j2UHKk2R/4LSwoZCeMvIdbSfLpxTOSjD9scUiJWjwPHLH7/e946ENlhi52GANdYMGa+FxEQGR9HiHIoYn99AYUcYqkJ7qeOgXMJdkL6vZACdzeepAGajgC/jiscJuxmBtWCoqqi0GnG0AIXq14E9VgscSMLZ63i30mKDWwSZF1FFBLUHDSV+CLaFKBfjsGzVVU85jlYSWJ2E0FJ+w0cRnNB3B2bmPI7miy7okzQIqagEHop4bbaPmbgG5uMX2lMgb6RX0oU5hqU4B8FwHUwIDAQAB" ;
+		npx:hasSignature "G8dZu6x5TKzpfCmNOI03fxZiRsyRma+wsNeFpcMUjw1GlxWilLJUH8KViJWXSFbk+Fs5e4EWOn9yLMytyfrbavKPS8p2C0pEwXSC7c0BeU1J3v5ZpwhbXERox1EVpBLVBtQopnMq7kSB0bKemZMVk0fqyU++b7iXC5yuAxoMVUqB8pNfIPaSkIjk1yt5hTxWxkcqA+mD+DUfHPnnK44cbwGMpr2R0tqPUlKZfwHGYAJ46tMq2GUBpeTv4133SYJLPT+9Q/m08lJkxdt7GHuapfehsXATkmnmVoz/EFp0sxMRI7m8EtUM6WLSWZo+atVSm9IfdMxdFo088aQ3XzkFcQ==" ;
+		npx:hasSignatureTarget this: .
+}
