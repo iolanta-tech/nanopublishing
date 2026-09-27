@@ -1,4 +1,5 @@
 nav:
   - RDF ontology visualization: rdf
   - RDFS ontology visualization: rdfs
+  - OWL ontology visualization: owl
   - Proxima Centauri icons for yaml-ld examples: alpha-centauri
